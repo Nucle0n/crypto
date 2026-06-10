@@ -223,7 +223,8 @@
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      message.textContent = "";
+      
+      message.textContent = "TEST : message d'erreur";
 
       const donnees = {
         montant: lireNombre(champs.montant),

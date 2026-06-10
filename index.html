@@ -224,26 +224,25 @@
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       
-      message.textContent = "TEST : message d'erreur";
+      message.textContent = "";
 
-      // const donnees = {
-      //   montant: lireNombre(champs.montant),
-      //   tauxJournalier: lireNombre(champs.taux) / 100,
-      //   jours: lireNombre(champs.jours)
-      // };
+      const donnees = {
+        montant: lireNombre(champs.montant),
+        tauxJournalier: lireNombre(champs.taux) / 100,
+        jours: lireNombre(champs.jours)
+      };
 
-      // if (
-      //   !Number.isFinite(donnees.montant) ||
-      //   !Number.isFinite(donnees.tauxJournalier) ||
-      //   !Number.isFinite(donnees.jours)
-      // ) {
-      //   message.textContent = "Valeurs invalides.";
-      //   return;
-      // }
+      if (
+        !Number.isFinite(donnees.montant) ||
+        !Number.isFinite(donnees.tauxJournalier) ||
+        !Number.isFinite(donnees.jours)
+      ) {
+        message.textContent = "Valeurs invalides.";
+        return;
+      }
 
-      // const resultats = calculerProfit(donnees);
-      // afficherResultats(resultats);
-      return;
+      const resultats = calculerProfit(donnees);
+      afficherResultats(resultats);
     });
   </script>
 </body>

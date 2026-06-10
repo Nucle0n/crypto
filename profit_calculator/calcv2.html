@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto Profit Calculator</title>
+
+  <style>
+    :root {
+      --bg: #050816;
+      --card: #0b1020;
+      --border: #1f2a44;
+      --text: #e8f0ff;
+      --muted: #8f9bb3;
+      --accent: #f7931a;
+      --green: #00e676;
+      --red: #ff4d6d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at top, #16213e, transparent 35%),
+        var(--bg);
+      color: var(--text);
+      font-family: system-ui, sans-serif;
+    }
+
+    main {
+      width: min(460px, 92vw);
+      padding: 32px;
+      background: rgba(11, 16, 32, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 0 40px rgba(247, 147, 26, 0.12);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    .subtitle {
+      margin: 8px 0 24px;
+      color: var(--muted);
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    input {
+      width: 100%;
+      margin-top: 6px;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #070b16;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    input:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f7931a, #ffbf3c);
+      color: #121212;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .taxe {
+      margin-top: 18px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--muted);
+      background: #070b16;
+      font-size: 0.9rem;
+    }
+
+    .message {
+      margin-top: 16px;
+      color: var(--red);
+      min-height: 1.2em;
+    }
+
+    .resultat {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      gap: 12px;
+    }
+
+    .ligne {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .valeur {
+      color: var(--green);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>₿ Crypto Profit</h1>
+    <p class="subtitle">Simulation de rendement composé journalier</p>
+
+    <form id="form-calcul">
+      <label for="montant">Capital initial</label>
+      <input id="montant" type="number" min="0" step="0.01" value="100" required />
+
+      <label for="taux">Gain quotidien moyen (%)</label>
+      <input id="taux" type="number" min="0" step="0.01" value="1" required />
+
+      <label for="jours">Durée du trade / plan en jours</label>
+      <input id="jours" type="number" min="1" step="1" value="365" required />
+
+      <button type="submit">Calculer le profit</button>
+    </form>
+
+    <div class="taxe">Taxation fixe appliquée : 30 % sur les bénéfices</div>
+    <div class="message" id="message"></div>
+
+    <section class="resultat" aria-live="polite">
+      <div class="ligne">
+        <span>Profit brut</span>
+        <span class="valeur" id="interets">-</span>
+      </div>
+
+      <div class="ligne">
+        <span>Capital avant taxe</span>
+        <span class="valeur" id="capital-avant">-</span>
+      </div>
+
+      <div class="ligne">
+        <span>Profit net</span>
+        <span class="valeur" id="benefice-apres">-</span>
+      </div>
+
+      <div class="ligne">
+        <span>Capital net final</span>
+        <span class="valeur" id="capital-apres">-</span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const TAUX_TAXE = 0.30;
+
+    const form = document.querySelector("#form-calcul");
+    const message = document.querySelector("#message");
+
+    const champs = {
+      montant: document.querySelector("#montant"),
+      taux: document.querySelector("#taux"),
+      jours: document.querySelector("#jours")
+    };
+
+    const sortie = {
+      interets: document.querySelector("#interets"),
+      capitalAvant: document.querySelector("#capital-avant"),
+      beneficeApres: document.querySelector("#benefice-apres"),
+      capitalApres: document.querySelector("#capital-apres")
+    };
+
+    const formatEuro = new Intl.NumberFormat("fr-FR", {
+      style: "currency",
+      currency: "EUR"
+    });
+
+    function lireNombre(input) {
+      return Number(input.value);
+    }
+
+    function calculerProfit({ montant, tauxJournalier, jours }) {
+      const capitalAvantTaxe = montant * Math.pow(1 + tauxJournalier, jours);
+      const profitBrut = capitalAvantTaxe - montant;
+      const montantTaxe = profitBrut * TAUX_TAXE;
+      const profitNet = profitBrut - montantTaxe;
+      const capitalNetFinal = montant + profitNet;
+
+      return {
+        profitBrut,
+        capitalAvantTaxe,
+        profitNet,
+        capitalNetFinal
+      };
+    }
+
+    function afficherResultats(resultats) {
+      sortie.interets.textContent = formatEuro.format(resultats.profitBrut);
+      sortie.capitalAvant.textContent = formatEuro.format(resultats.capitalAvantTaxe);
+      sortie.beneficeApres.textContent = formatEuro.format(resultats.profitNet);
+      sortie.capitalApres.textContent = formatEuro.format(resultats.capitalNetFinal);
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      message.textContent = "";
+
+      const donnees = {
+        montant: lireNombre(champs.montant),
+        tauxJournalier: lireNombre(champs.taux) / 100,
+        jours: lireNombre(champs.jours)
+      };
+
+      if (
+        !Number.isFinite(donnees.montant) ||
+        !Number.isFinite(donnees.tauxJournalier) ||
+        !Number.isFinite(donnees.jours)
+      ) {
+        message.textContent = "Valeurs invalides.";
+        return;
+      }
+
+      const resultats = calculerProfit(donnees);
+      afficherResultats(resultats);
+    });
+  </script>
+</body>
+</html>

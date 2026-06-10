@@ -99,10 +99,15 @@
     }
 
     .message {
-      margin-top: 0px;
-      color: var(--red);
-      min-height: 0;
-    }
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    color: var(--red);
+    background: rgba(255, 77, 109, 0.12);
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
 
     .resultat {
       margin-top: 10px;
@@ -226,23 +231,24 @@
       
       message.textContent = "TEST : message d'erreur";
 
-      const donnees = {
-        montant: lireNombre(champs.montant),
-        tauxJournalier: lireNombre(champs.taux) / 100,
-        jours: lireNombre(champs.jours)
-      };
+      // const donnees = {
+      //   montant: lireNombre(champs.montant),
+      //   tauxJournalier: lireNombre(champs.taux) / 100,
+      //   jours: lireNombre(champs.jours)
+      // };
 
-      if (
-        !Number.isFinite(donnees.montant) ||
-        !Number.isFinite(donnees.tauxJournalier) ||
-        !Number.isFinite(donnees.jours)
-      ) {
-        message.textContent = "Valeurs invalides.";
-        return;
-      }
+      // if (
+      //   !Number.isFinite(donnees.montant) ||
+      //   !Number.isFinite(donnees.tauxJournalier) ||
+      //   !Number.isFinite(donnees.jours)
+      // ) {
+      //   message.textContent = "Valeurs invalides.";
+      //   return;
+      // }
 
-      const resultats = calculerProfit(donnees);
-      afficherResultats(resultats);
+      // const resultats = calculerProfit(donnees);
+      // afficherResultats(resultats);
+      return;
     });
   </script>
 </body>
